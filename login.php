@@ -34,12 +34,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['username'] = $user['username'];
         $_SESSION['role'] = 'user'; // Assign role as user
-
+    
         header("Location: home.php");
         exit();
-        else {
-            $message = "Invalid email or password.";
-        }
+    } else {
+        $message = "Invalid email or password.";
+    }
+    
     }
     ?>
     <!DOCTYPE html>
