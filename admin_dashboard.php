@@ -105,6 +105,15 @@ unset($_SESSION['message']);
             border-radius: 5px;
             cursor: pointer;
         }
+        .profile {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
         .container {
             padding: 20px;
             max-width: 1200px;
@@ -166,15 +175,19 @@ unset($_SESSION['message']);
             background: #f2dede;
             color: #a94442;
         }
-        
     </style>
 </head>
 <body>
     <div class="topbar">
         <h2>Admin Dashboard</h2>
-        <form method="POST" action="admin_logout.php">
-            <button class="logout" type="submit">Logout</button>
-        </form>
+        <div>
+            <form method="GET" action="profile.php" style="display: inline;">
+                <button class="profile" type="submit">Profile</button>
+            </form>
+            <form method="POST" action="admin_logout.php" style="display: inline;">
+                <button class="logout" type="submit">Logout</button>
+            </form>
+        </div>
     </div>
 
     <div class="container">
@@ -188,9 +201,7 @@ unset($_SESSION['message']);
         <!-- Rooms Management Section -->
         <div class="section">
             <h1>Manage Escape Rooms</h1>
-            
             <a href="add_room.php" class="btn btn-primary">Add New Room</a>
-            
             <table>
                 <thead>
                     <tr>
@@ -205,14 +216,12 @@ unset($_SESSION['message']);
                     <?php foreach ($rooms as $room): ?>
                     <tr>
                         <td><?php echo htmlspecialchars($room['id']); ?></td>
-                        
                         <td><?php echo htmlspecialchars($room['name']); ?></td>
                         <td><?php echo htmlspecialchars($room['difficulty']); ?></td>
                         <td><?php echo number_format($room['price'], 2); ?></td>
                         <td>
                             <a href="edit_room.php?id=<?php echo $room['id']; ?>" class="btn btn-edit">Edit</a>
-                            <a href="?delete_room=<?php echo $room['id']; ?>" class="btn btn-danger" 
-                               onclick="return confirm('Are you sure?')">Delete</a>
+                            <a href="?delete_room=<?php echo $room['id']; ?>" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
                         </td>
                     </tr>
                     <?php endforeach; ?>
@@ -228,7 +237,6 @@ unset($_SESSION['message']);
         <!-- Bookings Section -->
         <div class="section">
             <h1>All Bookings</h1>
-            
             <table>
                 <thead>
                     <tr>

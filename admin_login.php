@@ -8,7 +8,7 @@ if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'admin') {
 }
 
 // ثابت: اسم الأدمن وكلمة مروره
-$admin_username = "admin";
+$admin_username = "admin@example.com";
 $admin_password_hash = '$2y$12$9F6x8NRV3m/mQygGtvxB9e12gk6XG/WJbff0uycTa9rkC7Aup1mWG'; // hashed 'admin123'
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -16,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $password = $_POST['password'];
 
     if ($username === $admin_username && password_verify($password, $admin_password_hash)) {
-        $_SESSION['user_id'] = 1; // ID وهمي للأدمن
+        $_SESSION['user_id'] = 8; // Real admin ID from database
         $_SESSION['username'] = $admin_username;
         $_SESSION['role'] = 'admin';
 

@@ -4,7 +4,7 @@ error_reporting(E_ALL);
 
 $message = "";
 
-// ✅ Connect to database with error handling
+// ✅ Connect to SQLite database
 try {
     $db = new PDO("sqlite:database.sqlite");
 } catch (PDOException $e) {
@@ -12,7 +12,6 @@ try {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // ✅ Trim and sanitize input
     $username = htmlspecialchars(trim($_POST['username']));
     $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
     $password = $_POST['password'];
@@ -30,26 +29,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $existingUser = $checkStmt->fetch();
 
             if ($existingUser) {
-                $message = "❌ Email already registered. Please login or use a different email.";
+                $message = "❌ Email already registered.";
             } else {
-                // ✅ Hash password securely
+                // ❌ Simulated weak password storage (MD5 - insecure)
+                $weakPassword = md5($password);
+
+                // ✅ Secure password hash (bcrypt)
                 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-                // ✅ Use prepared statement for secure insert
-                $stmt = $db->prepare("INSERT INTO users (username, email, password, role) VALUES (:username, :email, :password, :role)");
+                // ✅ AES encryption of original password
+                $key = '12345678901234567890123456789012'; // exactly 32 chars
+                $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length('aes-256-cbc'));
+                $encrypted = openssl_encrypt($password, 'aes-256-cbc', $key, 0, $iv);
+                $encryptedPassword = base64_encode($iv . $encrypted); // save IV + ciphertext
+
+                // ✅ Insert securely into DB
+                $stmt = $db->prepare("INSERT INTO users (username, email, password, encrypted_password, role)
+                                      VALUES (:username, :email, :password, :encrypted_password, :role)");
                 $stmt->execute([
                     'username' => $username,
                     'email' => $email,
                     'password' => $hashedPassword,
-                    'role' => 'user' // default role
+                    'encrypted_password' => $encryptedPassword,
+                    'role' => 'user'
                 ]);
 
-                // Redirect to login page after successful registration
                 header("Location: login.php");
                 exit();
             }
         } catch (PDOException $e) {
-            $message = "Database error.";
+            $message = "Database error: " . $e->getMessage();
+
         }
     }
 }
@@ -123,7 +133,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <button type="submit">Register</button>
         </form>
         <a href="login.php">Already have an account? Login here</a>
-        <!-- ✅ Escape message output to prevent XSS -->
         <div class="message"><?php echo htmlspecialchars($message); ?></div>
     </div>
 </body>
